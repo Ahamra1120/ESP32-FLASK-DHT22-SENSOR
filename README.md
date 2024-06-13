@@ -137,6 +137,9 @@ if __name__ == '__main__':
 Atau bisa lihat pada link berikut : <br>
 [main.py](main.py)
 
+# Tampilan Dashboard Data Sensor DHT22
+![Gambar Dashboard](img/Dashboard_Data_Sensor.jpg)
+
 # Program Dashboard Data Sensor DHT22
 ```html
 <!DOCTYPE html>
@@ -366,5 +369,3 @@ Atau bisa lihat pada link berikut : <br>
 Klik tautan berikut untuk melihat kode <br>
 [index.html](templates/index.html)
 
-# Tampilan Dashboard Data Sensor DHT22
-![Gambar Dashboard](img/Dashboard_Data_Sensor.jpg)
