@@ -15,8 +15,8 @@ Asal : MAN 2 Jakarta<br>
 # Pin ESP32 TO SENSOR
 | ESP32 | Sensor DHT22       |
 |----------------|------------------|
-| 5V / 3V| VCC |
-| GND | GND |
+| 5V / 3V| + |
+| GND | - |
 | 27 | OUT |
 # Foto Rangkaian Fisik
 ![Gambar Proyek](img/Rangkaian_Fisik.jpg)
