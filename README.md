@@ -90,7 +90,7 @@ void loop() {
 }
 ```
 Klik tautan berikut untuk melihat kode <br>
-[http_post.ino](http_post/http_post.ino)
+[kirim_data.ino](kirim_data/kirim_data.ino)
 
 # Program Python Flask
 Program Flask
