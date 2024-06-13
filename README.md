@@ -137,5 +137,234 @@ if __name__ == '__main__':
 Atau bisa lihat pada link berikut : <br>
 [main.py](main.py)
 
+# Program Dashboard Data Sensor DHT22
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px 0;
+        }
+        .widget {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .icon {
+            font-size: 2em;
+            margin-right: 10px;
+        }
+        .value h2, .value p {
+            margin: 0;
+        }
+        .value p {
+            font-size: 1.2em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        th.sorted-asc::after {
+            content: ' ▲';
+        }
+        th.sorted-desc::after {
+            content: ' ▼';
+        }
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .pagination button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .pagination button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Sensor DHT22</h1>
+    <p>Menampilkan Data Sensor DHT22 dari Mikrokontroller ESP32 secara Real-Time</p>
+    <div class="container">
+        <div class="widget" id="temperature-widget">
+            <i class="fas fa-temperature-high icon"></i>
+            <div class="value">
+                <h2>Temperature</h2>
+                <p id="temperature-value">-- °C</p>
+            </div>
+        </div>
+        <div class="widget" id="humidity-widget">
+            <i class="fas fa-wind icon"></i>
+            <div class="value">
+                <h2>Humidity</h2>
+                <p id="humidity-value">-- %</p>
+            </div>
+        </div>
+    </div>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable('timestamp')">Timestamp</th>
+                <th onclick="sortTable('temperature')">Temperature (°C)</th>
+                <th onclick="sortTable('humidity')">Humidity (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here dynamically -->
+        </tbody>
+    </table>
+    <div class="pagination">
+        <button id="prev-button" onclick="prevPage()">Previous</button>
+        <button id="next-button" onclick="nextPage()">Next</button>
+    </div>
+    <script>
+        let data = [];
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let sortOrder = {
+            column: 'timestamp',
+            direction: 'desc'
+        };
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/data');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                data = await response.json();
+                data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                updateWidgets();
+                updateTable();
+            } catch (error) {
+                console.error('Fetch error: ', error);
+            }
+        }
+
+        function updateWidgets() {
+            if (data.length > 0) {
+                const latestData = data[0];
+                document.getElementById('temperature-value').textContent = `${latestData.temperature.toFixed(2)} °C`;
+                document.getElementById('humidity-value').textContent = `${latestData.humidity.toFixed(2)} %`;
+            }
+        }
+
+        function sortTable(column) {
+            if (sortOrder.column === column) {
+                sortOrder.direction = sortOrder.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortOrder.column = column;
+                sortOrder.direction = 'asc';
+            }
+            data.sort((a, b) => {
+                if (sortOrder.direction === 'asc') {
+                    return a[column] > b[column] ? 1 : -1;
+                } else {
+                    return a[column] < b[column] ? 1 : -1;
+                }
+            });
+            updateTable();
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('data-table').querySelector('tbody');
+            tbody.innerHTML = '';
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = data.slice(start, end);
+            pageData.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.timestamp}</td>
+                    <td>${entry.temperature.toFixed(2)}</td>
+                    <td>${entry.humidity.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            updatePaginationButtons();
+            updateTableHeaders();
+        }
+
+        function updatePaginationButtons() {
+            document.getElementById('prev-button').disabled = currentPage === 1;
+            document.getElementById('next-button').disabled = currentPage * rowsPerPage >= data.length;
+        }
+
+        function updateTableHeaders() {
+            const headers = document.querySelectorAll('th');
+            headers.forEach(header => {
+                header.classList.remove('sorted-asc', 'sorted-desc');
+                if (header.textContent.includes(capitalize(sortOrder.column))) {
+                    header.classList.add(sortOrder.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                }
+            });
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                updateTable();
+            }
+        }
+
+        function nextPage() {
+            if (currentPage * rowsPerPage < data.length) {
+                currentPage++;
+                updateTable();
+            }
+        }
+
+        function capitalize(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        setInterval(fetchData, 1000); // Fetch data every second
+        fetchData(); // Initial fetch
+    </script>
+</body>
+</html>
+```
+Klik tautan berikut untuk melihat kode <br>
+[index.html](templates/index.html)
+
 # Tampilan Dashboard Data Sensor DHT22
 ![Gambar Dashboard](img/Dashboard_Data_Sensor.jpg)
