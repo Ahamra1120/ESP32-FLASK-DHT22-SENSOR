@@ -1,5 +1,4 @@
 # ESP32-FLASK-DHT22-SENSOR
-# ESP32-FLASK-LIGHT-SENSOR
 Tugas Technical Assignments SIC 2024<br>
 Saya menggunakan Sensor DHT22 (Temprature & Humidity) sebagai Input-nya, ESP32 melakukan POST Data Sensor, dan Flask menampilkan data yang diterima dari ESP32.
 
@@ -139,4 +138,4 @@ Atau bisa lihat pada link berikut : <br>
 [main.py](main.py)
 
 # Tampilan Dashboard Data Sensor DHT22
-![Gambar Proyek](img/Dashboard_Data_Sensor.jpg)
+![Gambar Dashboard](img/Dashboard_Data_Sensor.jpg)
