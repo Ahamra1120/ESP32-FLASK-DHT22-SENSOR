@@ -3,9 +3,9 @@ Tugas Technical Assignments SIC 2024<br>
 Saya menggunakan Sensor DHT22 (Temprature & Humidity) sebagai Input-nya, ESP32 melakukan POST Data Sensor, dan Flask menampilkan data yang diterima dari ESP32.
 
 # Identitas Diri
-Nama : Ahmad Hamra<br>
-Tim  : EnviroMind<br>
-Asal : MAN 2 Jakarta<br>
+Nama         : Ahmad Hamra<br>
+Tim          : EnviroMind<br>
+Asal Sekolah : MAN 2 Jakarta<br>
 
 # Alat dan bahan
 - ESP32
